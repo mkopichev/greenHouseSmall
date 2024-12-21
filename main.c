@@ -7,7 +7,7 @@ extern bool dayTime;
 int main(void) {
 
     bool flagLcd = false;
-    char tmpStr[18], tmpStrWeekDay[4];
+    char tmpStr[17], tmpStrWeekDay[4];
 
     initAll();
 
@@ -52,26 +52,26 @@ int main(void) {
 
             oneSecPassed = false;
 
-            switch(rtcGetTimeWeekday(RTC_WEEKDAY)) {
-            case 0:
+            switch(rtcGetTimeWeekday(RTC_WEEKDAY) & 0x07) {
+            case 1:
                 snprintf(tmpStrWeekDay, sizeof(tmpStrWeekDay), "%s", "Mon");
                 break;
-            case 1:
+            case 2:
                 snprintf(tmpStrWeekDay, sizeof(tmpStrWeekDay), "%s", "Tue");
                 break;
-            case 2:
+            case 3:
                 snprintf(tmpStrWeekDay, sizeof(tmpStrWeekDay), "%s", "Wed");
                 break;
-            case 3:
+            case 4:
                 snprintf(tmpStrWeekDay, sizeof(tmpStrWeekDay), "%s", "Thu");
                 break;
-            case 4:
+            case 5:
                 snprintf(tmpStrWeekDay, sizeof(tmpStrWeekDay), "%s", "Fri");
                 break;
-            case 5:
+            case 6:
                 snprintf(tmpStrWeekDay, sizeof(tmpStrWeekDay), "%s", "Sat");
                 break;
-            case 6:
+            case 7:
                 snprintf(tmpStrWeekDay, sizeof(tmpStrWeekDay), "%s", "Sun");
                 break;
             }

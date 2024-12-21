@@ -1,5 +1,7 @@
 #include "../inc/common.h"
 
+// #define CLOCK_SET_TIME_DATE
+
 uint8_t digit(uint16_t d, uint8_t m) {
 
     uint8_t i = 5, a;
@@ -29,8 +31,8 @@ void initAll(void) {
     uartTransmitStr("adcInit_ok\r\n");
     rtcInit();
     uartTransmitStr("rtcInit_ok\r\n");
-#ifdef SET_CLOCK
-    rtcSetTime(16, 31, 10, 1);
+#ifdef CLOCK_SET_TIME_DATE
+    rtcSetTime(18, 8, 0, 6);
     uartTransmitStr("rtcSetTime_ok\r\n");
 #endif
     relayBoardInit();

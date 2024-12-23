@@ -37,6 +37,8 @@ void initAll(void) {
 #endif
     relayBoardInit();
     uartTransmitStr("relayBoardInit_ok\r\n");
+    waterPumpInit();
+    uartTransmitStr("waterPumpInit_ok\r\n");
     timerInit();
     uartTransmitStr("timerInit_ok\r\n");
     sei();

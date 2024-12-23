@@ -6,8 +6,8 @@ bool dayTime = true;
 
 void timerInit(void) {
 
-    TCCR0B = (1 << CS00) | (1 << CS02); // prescaler 1024
-    TIMSK0 = (1 << TOIE0);
+    TCCR0B |= (1 << CS00) | (1 << CS02); // prescaler 1024
+    TIMSK0 |= (1 << TOIE0);
     TCNT0 = 0x64; // 10ms period
 }
 
@@ -73,4 +73,6 @@ void climateMaining(void) {
 
         dayTime = false;
     }
+
+    // waterPumpPour();
 }

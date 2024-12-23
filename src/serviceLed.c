@@ -3,8 +3,8 @@
 void serviceLedInit(void) {
 
     DDRB |= (1 << 5);
-    TCCR2B = (1 << CS21); // prescaler 8
-    TIMSK2 = (1 << TOIE2);
+    TCCR2B |= (1 << CS21); // prescaler 8
+    TIMSK2 |= (1 << TOIE2);
 }
 
 ISR(TIMER2_OVF_vect) { // 128 us ovf period

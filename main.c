@@ -11,6 +11,18 @@ int main(void) {
 
     initAll();
 
+    lcdSetCursor(0);
+    if(dayTime) {
+
+        snprintf(tmpStr, sizeof(tmpStr), "%d.%d oC; ill:%s", (uint8_t)tempSensReadTemp(), (uint16_t)(tempSensReadTemp() * 10) % 10, (getAnalogLight() ? "low" : " ok"));
+    } else {
+
+        snprintf(tmpStr, sizeof(tmpStr), "%d.%d oC; ill:%s", (uint8_t)tempSensReadTemp(), (uint16_t)(tempSensReadTemp() * 10) % 10, "off");
+    }
+    uartTransmitStr(tmpStr);
+    uartTransmitStr("\r\n");
+    lcdSendStr(tmpStr);
+
     while(1) {
 
         if(maintainingPeriodPassed) {

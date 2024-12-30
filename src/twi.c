@@ -5,6 +5,7 @@ uint8_t twiMutex = VACANT;
 void twiInit(void) {
 
     TWBR = (uint8_t)(((F_CPU / (SCL_FREQ * 1000)) - 16) / 2);
+    uartTransmitStr("twiInit_ok\r\n");
 }
 
 void twiStart(void) {
@@ -54,7 +55,6 @@ void twiReadMultipleData(uint8_t devAddr, uint8_t regAddr, void *rxBuf, uint8_t 
 
     // uint8_t tmp[length];
     // *rxBuf = 0; // without this rxBuf collection works incorrect
-
     twiStart();
     twiTransmitByte((devAddr << 1) | W);
     twiTransmitByte(regAddr);
@@ -63,10 +63,10 @@ void twiReadMultipleData(uint8_t devAddr, uint8_t regAddr, void *rxBuf, uint8_t 
     for(uint8_t i = 0; i < length; i++) {
         if(i != (length - 1)) {
 
-            ((uint8_t *)rxBuf)[length - i - 1] = twiReceiveByte(false);
+            ((uint8_t *)rxBuf)[i] = twiReceiveByte(false);
         } else {
 
-            ((uint8_t *)rxBuf)[length - i - 1] = twiReceiveByte(true);
+            ((uint8_t *)rxBuf)[i] = twiReceiveByte(true);
         }
     }
     // for(uint8_t i = 0; i < length; i++) {

@@ -9,6 +9,7 @@ void timerInit(void) {
     TCCR0B |= (1 << CS00) | (1 << CS02); // prescaler 1024
     TIMSK0 |= (1 << TOIE0);
     TCNT0 = 0x64; // 10ms period
+    uartTransmitStr("maintainingTimerInit_ok\r\n");
 }
 
 ISR(TIMER0_OVF_vect) {
@@ -37,42 +38,57 @@ ISR(TIMER0_OVF_vect) {
 
 void climateMaining(void) {
 
+    uartTransmitStr("climateMaintaining started\r\n");
     relayBoard(HEATING_LAMP, TURN_OFF);
+    uartTransmitStr("heatingLamp OFF\r\n");
     relayBoard(FITO_LAMP, TURN_OFF);
+    uartTransmitStr("fitoLamp OFF\r\n");
 
     _delay_ms(500);
 
     if(tempSensReadTemp() < TEMP_SETPOINT) {
 
         relayBoard(HEATING_LAMP, TURN_ON);
+        uartTransmitStr("heatingLamp ON\r\n");
     } else {
 
         relayBoard(HEATING_LAMP, TURN_OFF);
+        uartTransmitStr("heatingLamp OFF\r\n");
     }
 
     if(tempSensReadTemp() > (TEMP_SETPOINT + TEMP_SETPOINT_DELTA)) {
 
         relayBoard(COOLING_FAN, TURN_ON);
+        uartTransmitStr("coolingFan ON\r\n");
     } else {
 
         relayBoard(COOLING_FAN, TURN_OFF);
+        uartTransmitStr("coolingFan OFF\r\n");
     }
 
-    if((rtcGetTimeWeekday(RTC_HOUR) < 22) && (rtcGetTimeWeekday(RTC_HOUR) > 10)) {
+    rtcGetTimeWeekday();
+
+    if((rtcGetData(RTC_HOUR) < 22) && (rtcGetData(RTC_HOUR) > 10)) {
 
         dayTime = true;
+        uartTransmitStr("dayTime TRUE\r\n");
 
         if(getAnalogLight()) {
 
             relayBoard(FITO_LAMP, TURN_ON);
+            uartTransmitStr("fitoLamp ON\r\n");
         } else {
 
             relayBoard(FITO_LAMP, TURN_OFF);
+            uartTransmitStr("fitoLamp OFF\r\n");
         }
     } else {
 
+        uartTransmitStr("dayTime FALSE\r\n");
         dayTime = false;
     }
 
     // waterPumpPour();
+
+    uartTransmitStr("climateMaining finished\r\n");
 }

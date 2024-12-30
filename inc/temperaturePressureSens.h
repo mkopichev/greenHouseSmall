@@ -1,5 +1,5 @@
-#ifndef TWI_TEMPERATURE_PRESSURE_H_
-#define TWI_TEMPERATURE_PRESSURE_H_
+#ifndef TEMPERATURE_PRESSURE_SENS_H_
+#define TEMPERATURE_PRESSURE_SENS_H_
 
 // BMP180 digital temperature and pressure sensor
 // https://www.micro-semiconductor.com/datasheet/c9-BMP180.pdf

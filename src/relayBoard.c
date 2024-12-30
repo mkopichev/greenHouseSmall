@@ -8,6 +8,7 @@ void relayBoardInit(void) {
     relayBoard(HEATING_LAMP, TURN_OFF);
     relayBoard(FITO_LAMP, TURN_OFF);
     relayBoard(COOLING_FAN, TURN_OFF);
+    uartTransmitStr("relayBoardInit_ok\r\n");
 }
 
 void relayBoard(uint8_t device, bool state) {

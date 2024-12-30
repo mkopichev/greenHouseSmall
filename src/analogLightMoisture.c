@@ -6,6 +6,7 @@ void adcInit(void) {
 
     ADMUX = (1 << REFS0) | LIGHT_CHANNEL_1;
     ADCSRA = (1 << ADEN) | (1 << ADSC) | (1 << ADIE) | (1 << ADPS2) | (1 << ADPS1) | (1 << ADPS0);
+    uartTransmitStr("adcInit_ok\r\n");
 }
 
 ISR(ADC_vect) {

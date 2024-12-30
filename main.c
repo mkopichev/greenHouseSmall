@@ -4,54 +4,15 @@ extern bool maintainingPeriodPassed;
 extern bool fiveSecPassed, oneSecPassed;
 extern bool dayTime;
 
+char tmpStr[18], tmpStrWeekDay[4];
+
 int main(void) {
 
     bool flagLcd = false;
-    char tmpStr[18], tmpStrWeekDay[4];
 
     wdt_enable(WDTO_8S);
 
     initAll();
-
-    lcdSetCursor(0);
-    if(dayTime) {
-
-        snprintf(tmpStr, sizeof(tmpStr), "%d.%d oC; ill:%s", (uint8_t)tempSensReadTemp(), (uint16_t)(tempSensReadTemp() * 10) % 10, (getAnalogLight() ? "low" : " ok"));
-    } else {
-
-        snprintf(tmpStr, sizeof(tmpStr), "%d.%d oC; ill:%s", (uint8_t)tempSensReadTemp(), (uint16_t)(tempSensReadTemp() * 10) % 10, "off");
-    }
-    uartTransmitStr(tmpStr);
-    uartTransmitStr("\r\n");
-    lcdSendStr(tmpStr);
-
-    rtcGetTimeWeekday();
-
-    switch(rtcGetData(RTC_WEEKDAY)) {
-    case 1:
-        snprintf(tmpStrWeekDay, sizeof(tmpStrWeekDay), "%s", "Mon");
-        break;
-    case 2:
-        snprintf(tmpStrWeekDay, sizeof(tmpStrWeekDay), "%s", "Tue");
-        break;
-    case 3:
-        snprintf(tmpStrWeekDay, sizeof(tmpStrWeekDay), "%s", "Wed");
-        break;
-    case 4:
-        snprintf(tmpStrWeekDay, sizeof(tmpStrWeekDay), "%s", "Thu");
-        break;
-    case 5:
-        snprintf(tmpStrWeekDay, sizeof(tmpStrWeekDay), "%s", "Fri");
-        break;
-    case 6:
-        snprintf(tmpStrWeekDay, sizeof(tmpStrWeekDay), "%s", "Sat");
-        break;
-    case 7:
-        snprintf(tmpStrWeekDay, sizeof(tmpStrWeekDay), "%s", "Sun");
-        break;
-    default:
-        break;
-    }
 
     while(1) {
 

@@ -7,6 +7,7 @@
 // one in a sec refresh time stamp on the screen.
 
 #include <avr/io.h>
+#include <avr/wdt.h>
 #include <avr/interrupt.h>
 #include <util/delay.h>
 #include <stdbool.h>
@@ -17,7 +18,7 @@
 #include "twi.h"
 #include "uart.h"
 #include "lcd.h"
-#include "twiTemperaturePressure.h"
+#include "temperaturePressureSens.h"
 #include "analogLightMoisture.h"
 #include "realTimeClock.h"
 #include "relayBoard.h"

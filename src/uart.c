@@ -16,16 +16,15 @@ void uartInit(void) {
     // UBRR0L = 51 = 0x33
     UBRR0L = 0x33;
 
-    uartTransmitDec(128);
+    uartTransmitDec((int16_t)128);
     uartTransmitByte('\t');
     uartTransmitBin(0b00001111);
     uartTransmitByte('\t');
     uarTransmitFloat(4.048F);
     uartTransmitByte('\t');
     uartTransmitHex(0xF7);
-    uartTransmitByte('\t');
-    uartTransmitStr("UART-OK");
     uartTransmitStr("\r\n");
+    uartTransmitStr("uartInit_ok\r\n");
 }
 
 // transmit byte of data

@@ -125,4 +125,5 @@ void lcdInit(void) {
     lcdSendCmd(0x0C);
     lcdSendStr("Loading...");
     lcdSetCursor(0);
+    uartTransmitStr("lcdInit_ok\r\n");
 }

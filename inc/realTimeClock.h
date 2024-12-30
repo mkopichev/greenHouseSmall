@@ -16,6 +16,7 @@
 
 void rtcInit(void);
 void rtcSetTime(uint8_t hour, uint8_t min, uint8_t sec, uint8_t weekday);
-uint8_t rtcGetTimeWeekday(uint8_t hmswd);
+void rtcGetTimeWeekday(void);
+int8_t rtcGetData(uint8_t hmswd);
 
 #endif

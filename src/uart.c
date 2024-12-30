@@ -18,7 +18,7 @@ void uartInit(void) {
 
     uartTransmitDec((int16_t)128);
     uartTransmitByte('\t');
-    uartTransmitBin(0b00001111);
+    uartTransmitBin(((uint16_t)0b1010010100001111));
     uartTransmitByte('\t');
     uarTransmitFloat(4.048F);
     uartTransmitByte('\t');

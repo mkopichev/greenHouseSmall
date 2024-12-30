@@ -5,5 +5,6 @@
 
 void waterPumpInit(void);
 void waterPumpPour(void);
+void waterPumpStop(void);
 
 #endif

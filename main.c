@@ -42,7 +42,7 @@ int main(void) {
                 uartTransmitStr(tmpStr);
                 uartTransmitStr("\r\n");
                 lcdSendStr(tmpStr);
-                uartTransmitStr("string sent to lcd\r\n");
+                uartTransmitStr("temperature and illumination data string sent to lcd\r\n");
             } else {
 
                 flagLcd = true;
@@ -51,7 +51,7 @@ int main(void) {
                 uartTransmitStr(tmpStr);
                 uartTransmitStr("\r\n");
                 lcdSendStr(tmpStr);
-                uartTransmitStr("string sent to lcd\r\n");
+                uartTransmitStr("pressure and moisture data string sent to lcd\r\n");
             }
         }
 
@@ -97,14 +97,11 @@ int main(void) {
             }
 
             lcdSetCursor(64);
-            uartTransmitStr("cursor set\r\n");
-            rtcGetTimeWeekday();
             snprintf(tmpStr, sizeof(tmpStr), "%02d:%02d:%02d %s", rtcGetData(RTC_HOUR), rtcGetData(RTC_MIN), rtcGetData(RTC_SEC), tmpStrWeekDay);
-            uartTransmitStr("string ready\r\n");
             uartTransmitStr(tmpStr);
             uartTransmitStr("\r\n");
             lcdSendStr(tmpStr);
-            uartTransmitStr("string sent to lcd\r\n");
+            uartTransmitStr("timestamp string sent to lcd\r\n");
         }
 
         wdt_reset();

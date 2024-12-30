@@ -28,7 +28,7 @@ void initAll(void) {
     adcInit();
     rtcInit();
 #ifdef CLOCK_SET_TIME_DATE
-    rtcSetTime(17, 38, 20, 1);
+    rtcSetTime(19, 38, 20, 1);
 #endif
     relayBoardInit();
     waterPumpInit();

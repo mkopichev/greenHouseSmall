@@ -13,10 +13,13 @@
 #define RTC_MIN     1
 #define RTC_HOUR    2
 #define RTC_WEEKDAY 3
+#define RTC_DATE    4
+#define RTC_MONTH   5
+#define RTC_YEAR    6
 
 void rtcInit(void);
-void rtcSetTime(uint8_t hour, uint8_t min, uint8_t sec, uint8_t weekday);
-void rtcGetTimeWeekday(void);
-int8_t rtcGetData(uint8_t hmswd);
+void rtcSetTimeDate(uint8_t hour, uint8_t min, uint8_t sec, uint8_t weekday, uint8_t date, uint8_t month, uint8_t year);
+void rtcGetTimeDate(void);
+int8_t rtcGetData(uint8_t hmswddmy);
 
 #endif

@@ -1,8 +1,9 @@
 #include "../inc/maintainingTimer.h"
 
 bool maintainingPeriodPassed = false;
-bool fiveSecPassed = false, oneSecPassed = false;
+bool tenSecPassed = false, oneSecPassed = false;
 bool dayTime = true;
+bool pouring = false;
 
 void timerInit(void) {
 
@@ -17,13 +18,13 @@ ISR(TIMER0_OVF_vect) {
     static uint32_t t0_counter = 0;
     TCNT0 = 0x64;
 
-    if(t0_counter < (MAINTAINIG_PERIOD * 100)) {
+    if(t0_counter <= (MAINTAINIG_PERIOD * 100)) {
 
         t0_counter++;
 
-        if(!(t0_counter % 500)) {
+        if(!(t0_counter % 1000)) {
 
-            fiveSecPassed = true;
+            tenSecPassed = true;
         }
         if(!(t0_counter % 100)) {
 
@@ -66,7 +67,7 @@ void climateMaining(void) {
         uartTransmitStr("coolingFan OFF\r\n");
     }
 
-    rtcGetTimeWeekday();
+    rtcGetTimeDate();
 
     if((rtcGetData(RTC_HOUR) < 22) && (rtcGetData(RTC_HOUR) > 10)) {
 
@@ -88,7 +89,17 @@ void climateMaining(void) {
         dayTime = false;
     }
 
-    // waterPumpPour();
+    // if(getAnalogMoisture()) {
+
+    //     pouring = true;
+    //     waterPumpPour();
+    //     uartTransmitStr("pouring ON\r\n");
+    // } else {
+
+    //     pouring = false;
+    //     waterPumpStop();
+    //     uartTransmitStr("pouring OFF\r\n");
+    // }
 
     uartTransmitStr("climateMaining finished\r\n");
 }

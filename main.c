@@ -1,16 +1,19 @@
 #include "inc/common.h"
 
 extern bool maintainingPeriodPassed;
-extern bool fiveSecPassed, oneSecPassed;
+extern bool tenSecPassed, oneSecPassed;
 extern bool dayTime;
+extern bool pouring;
 
 char tmpStr[18], tmpStrWeekDay[4];
+
+int16_t maintainingPeriodCounter;
 
 int main(void) {
 
     bool flagLcd = false;
 
-    wdt_enable(WDTO_8S);
+    maintainingPeriodCounter = MAINTAINIG_PERIOD - 1;
 
     initAll();
 
@@ -23,10 +26,10 @@ int main(void) {
             climateMaining();
         }
 
-        if(fiveSecPassed) {
+        if(tenSecPassed) {
 
-            fiveSecPassed = false;
-            uartTransmitStr("fiveSecPassed\r\n");
+            tenSecPassed = false;
+            uartTransmitStr("tenSecPassed\r\n");
 
             if(flagLcd) {
 
@@ -60,7 +63,14 @@ int main(void) {
             oneSecPassed = false;
             uartTransmitStr("oneSecPassed\r\n");
 
-            rtcGetTimeWeekday();
+            if(pouring) {
+
+                pouring = false;
+                waterPumpStop();
+                uartTransmitStr("pouring OFF\r\n");
+            }
+
+            rtcGetTimeDate();
 
             if(!rtcGetData(RTC_HOUR)) {
 
@@ -97,13 +107,44 @@ int main(void) {
             }
 
             lcdSetCursor(64);
-            snprintf(tmpStr, sizeof(tmpStr), "%02d:%02d:%02d %s", rtcGetData(RTC_HOUR), rtcGetData(RTC_MIN), rtcGetData(RTC_SEC), tmpStrWeekDay);
-            uartTransmitStr(tmpStr);
-            uartTransmitStr("\r\n");
-            lcdSendStr(tmpStr);
-            uartTransmitStr("timestamp string sent to lcd\r\n");
-        }
+            if(!flagLcd) {
 
+                if(maintainingPeriodCounter / 100) {
+
+                    snprintf(tmpStr, sizeof(tmpStr), "%02d:%02d:%02d %s %03d", rtcGetData(RTC_HOUR), rtcGetData(RTC_MIN), rtcGetData(RTC_SEC), tmpStrWeekDay, maintainingPeriodCounter);
+                } else if(maintainingPeriodCounter / 10) {
+
+                    snprintf(tmpStr, sizeof(tmpStr), "%02d:%02d:%02d %s  %02d", rtcGetData(RTC_HOUR), rtcGetData(RTC_MIN), rtcGetData(RTC_SEC), tmpStrWeekDay, maintainingPeriodCounter);
+                } else {
+
+                    snprintf(tmpStr, sizeof(tmpStr), "%02d:%02d:%02d %s   %01d", rtcGetData(RTC_HOUR), rtcGetData(RTC_MIN), rtcGetData(RTC_SEC), tmpStrWeekDay, maintainingPeriodCounter);
+                }
+                uartTransmitStr(tmpStr);
+                uartTransmitStr("\r\n");
+                lcdSendStr(tmpStr);
+                uartTransmitStr("timestamp string sent to lcd\r\n");
+            } else {
+
+                if(maintainingPeriodCounter / 100) {
+
+                    snprintf(tmpStr, sizeof(tmpStr), "%02d.%02d.%02d %s %03d", rtcGetData(RTC_DATE), rtcGetData(RTC_MONTH), rtcGetData(RTC_YEAR), tmpStrWeekDay, maintainingPeriodCounter);
+                } else if(maintainingPeriodCounter / 10) {
+
+                    snprintf(tmpStr, sizeof(tmpStr), "%02d.%02d.%02d %s  %02d", rtcGetData(RTC_DATE), rtcGetData(RTC_MONTH), rtcGetData(RTC_YEAR), tmpStrWeekDay, maintainingPeriodCounter);
+                } else {
+
+                    snprintf(tmpStr, sizeof(tmpStr), "%02d.%02d.%02d %s   %01d", rtcGetData(RTC_DATE), rtcGetData(RTC_MONTH), rtcGetData(RTC_YEAR), tmpStrWeekDay, maintainingPeriodCounter);
+                }
+                uartTransmitStr(tmpStr);
+                uartTransmitStr("\r\n");
+                lcdSendStr(tmpStr);
+                uartTransmitStr("datestamp string sent to lcd\r\n");
+            }
+            if(maintainingPeriodCounter-- <= 0) {
+
+                maintainingPeriodCounter = MAINTAINIG_PERIOD - 1;
+            }
+        }
         wdt_reset();
         _delay_ms(1);
     }

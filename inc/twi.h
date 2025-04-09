@@ -12,8 +12,10 @@
 
 #define SCL_FREQ 100L // kHz
 
-#define VACANT   0
-#define OCCUPIED 1
+#define VACANT   false
+#define OCCUPIED true
+
+extern int16_t maintainingPeriodCounter;
 
 void twiInit(void);
 void twiStart(void);

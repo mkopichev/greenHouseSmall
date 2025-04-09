@@ -7,45 +7,54 @@ void rtcInit(void) {
     uartTransmitStr("rtcInit_ok\r\n");
 }
 
-void rtcSetTime(uint8_t hour, uint8_t min, uint8_t sec, uint8_t weekday) {
+void rtcSetTimeDate(uint8_t hour, uint8_t min, uint8_t sec, uint8_t weekday, uint8_t date, uint8_t month, uint8_t year) {
 
-    uint8_t tmp[] = {(((sec / 10) << 4) | (sec % 10)), (((min / 10) << 4) | (min % 10)), (((hour / 10) << 4) | (hour % 10)), weekday};
-    twiWriteMultipleData(CLOCK_TWI_ADDRESS, 0x00, &tmp, 4);
+    uint8_t tmp[] = {(((sec / 10) << 4) | (sec % 10)), (((min / 10) << 4) | (min % 10)), (((hour / 10) << 4) | (hour % 10)),
+                     weekday,
+                     (((date / 10) << 4) | (date % 10)), (((month / 10) << 4) | (month % 10)), year};
+    twiWriteMultipleData(CLOCK_TWI_ADDRESS, 0x00, &tmp, 7);
     uartTransmitStr("rtcSetTime_ok\r\n");
 }
 
-uint8_t rtcConvertTime(uint8_t value) {
+uint8_t rtcConvertValue(uint8_t value) {
 
     return ((value >> 4) * 10 + (value & 0x0F));
 }
 
-uint8_t tmp[] = {0, 0, 0, 0};
+uint8_t tmp[] = {0, 0, 0, 0, 0, 0, 0};
 
-int8_t rtcGetData(uint8_t hmswd) {
-switch(hmswd) {
+int8_t rtcGetData(uint8_t hmswddmy) {
+
+    switch(hmswddmy) {
     case RTC_SEC:
-        return (rtcConvertTime(tmp[0]));
+        return (rtcConvertValue(tmp[RTC_SEC]));
         break;
     case RTC_MIN:
-        return (rtcConvertTime(tmp[1]));
+        return (rtcConvertValue(tmp[RTC_MIN]));
         break;
     case RTC_HOUR:
-        return (rtcConvertTime(tmp[2]));
+        return (rtcConvertValue(tmp[RTC_HOUR]));
         break;
     case RTC_WEEKDAY:
-        return (tmp[3]);
+        return (tmp[RTC_WEEKDAY]);
+        break;
+    case RTC_DATE:
+        return (rtcConvertValue(tmp[RTC_DATE]));
+        break;
+    case RTC_MONTH:
+        return (rtcConvertValue(tmp[RTC_MONTH]));
+        break;
+    case RTC_YEAR:
+        return (tmp[RTC_YEAR]);
         break;
     default:
         return -1;
     }
-
 }
 
-void rtcGetTimeWeekday() {
+void rtcGetTimeDate() {
 
-    uartTransmitStr("inside rtcGetTimeWeekday\r\n");
-
-    twiReadMultipleData(CLOCK_TWI_ADDRESS, 0x00, &tmp, 4);
-
-    uartTransmitStr("data read from rtc\r\n");
+    uartTransmitStr("inside rtcGetTimeDate\r\n");
+    twiReadMultipleData(CLOCK_TWI_ADDRESS, 0x00, &tmp, 7);
+    uartTransmitStr("rtcGetTimeDate function finished\r\n");
 }

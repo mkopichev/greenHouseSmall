@@ -1,18 +1,33 @@
 #include "../inc/twi.h"
 
-uint8_t twiMutex = VACANT;
+bool twiMutex = VACANT;
 
 void twiInit(void) {
 
     TWBR = (uint8_t)(((F_CPU / (SCL_FREQ * 1000)) - 16) / 2);
-    uartTransmitStr("twiInit_ok\r\n");
+    int16_t sclFreq = F_CPU / (16 + (2 * TWBR));
+    uartTransmitStr("twiInit_ok; SCL freq = ");
+    uartTransmitDec(sclFreq);
+    uartTransmitStr("\r\n");
 }
 
 void twiStart(void) {
 
     TWCR = (1 << TWINT) | (1 << TWSTA) | (1 << TWEN);
-    while(!(TWCR & (1 << TWINT)))
-        continue;
+    uint32_t timeout = 0;
+    while(!(TWCR & (1 << TWINT))) {
+
+        if(timeout++ > (F_CPU / 16UL)) {
+
+            uartTransmitStr("twiStart timeout\r\n");
+            maintainingPeriodCounter--;
+            wdt_reset();
+            break;
+        } else {
+
+            continue;
+        }
+    }
 }
 
 void twiStop(void) {
@@ -24,19 +39,47 @@ void twiTransmitByte(uint8_t data) {
 
     TWDR = data;
     TWCR = (1 << TWINT) | (1 << TWEN);
-    while(!(TWCR & (1 << TWINT)))
-        continue;
+    uint32_t timeout = 0;
+    while(!(TWCR & (1 << TWINT))) {
+
+        if(timeout++ > (F_CPU / 16UL)) {
+
+            uartTransmitStr("twiTransmitByte timeout\r\n");
+            maintainingPeriodCounter--;
+            wdt_reset();
+            break;
+        } else {
+
+            continue;
+        }
+    }
 }
 
 uint8_t twiReceiveByte(bool isLastByte) {
 
-    if(isLastByte)
+    if(isLastByte) {
+
         TWCR = (1 << TWINT) | (1 << TWEN);
-    else
+    } else {
+
         TWCR = (1 << TWINT) | (1 << TWEN) | (1 << TWEA);
-    while(!(TWCR & (1 << TWINT)))
-        continue;
-    return (TWDR);
+    }
+    uint32_t timeout = 0;
+    while(!(TWCR & (1 << TWINT))) {
+
+        if(timeout++ > (F_CPU / 16UL)) {
+
+            uartTransmitStr("twiReceiveByte timeout\r\n");
+            maintainingPeriodCounter--;
+            wdt_reset();
+            return 0;
+        } else {
+
+            continue;
+        }
+    }
+
+    return TWDR;
 }
 
 void twiWriteMultipleData(uint8_t devAddr, uint8_t regAddr, void *txBuf, uint8_t length) {
@@ -53,56 +96,25 @@ void twiWriteMultipleData(uint8_t devAddr, uint8_t regAddr, void *txBuf, uint8_t
 
 void twiReadMultipleData(uint8_t devAddr, uint8_t regAddr, void *rxBuf, uint8_t length) {
 
-    // uint8_t tmp[length];
-    // *rxBuf = 0; // without this rxBuf collection works incorrect
     twiStart();
     twiTransmitByte((devAddr << 1) | W);
     twiTransmitByte(regAddr);
     twiStart();
     twiTransmitByte((devAddr << 1) | R);
-    for(uint8_t i = 0; i < length; i++) {
-        if(i != (length - 1)) {
+    for(uint8_t i = 0; i < (length - 1); i++) {
 
-            ((uint8_t *)rxBuf)[i] = twiReceiveByte(false);
-        } else {
-
-            ((uint8_t *)rxBuf)[i] = twiReceiveByte(true);
-        }
+        ((uint8_t *)rxBuf)[i] = twiReceiveByte(false);
     }
-    // for(uint8_t i = 0; i < length; i++) {
-
-    //     if(i != (length - 1)) {
-
-    //         tmp[i] = twiReceiveByte(false);
-    //     } else {
-
-    //         tmp[i] = twiReceiveByte(true);
-    //     }
-    //     *rxBuf |= (tmp[i] << (8 * ((length - 1) - i)));
-    // }
+    ((uint8_t *)rxBuf)[length - 1] = twiReceiveByte(true);
     twiStop();
 }
-
-// void twiWriteData(uint8_t *tx_buf, uint8_t length) {
-
-//     for(uint8_t i = 0; i < length; i++)
-//         twiTransmitByte(*tx_buf++);
-// }
-
-// void twiReadData(uint8_t *rx_buf, uint8_t length) {
-
-//     for(uint8_t i = 0; i < length; i++) {
-//         if(i < (length - 1))
-//             *rx_buf++ = twiReceiveByte(false);
-//         else
-//             *rx_buf++ = twiReceiveByte(true);
-//     }
-// }
 
 void twiAcquire(void) {
 
     while(1) {
+
         if(twiMutex == VACANT) {
+
             twiMutex = OCCUPIED;
             break;
         }
